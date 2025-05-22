@@ -1,6 +1,7 @@
 package com.jobportal.controller;
 
 import com.jobportal.dtos.UserDto;
+import com.jobportal.exception.JobPortalException;
 import com.jobportal.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserController {
 private final UserService userService;
 
 @PostMapping("/register")
-public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserDto dto){
+public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserDto dto)  {
 
     return ResponseEntity.ok(userService.registerUser(dto));
 }
