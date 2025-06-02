@@ -7,14 +7,16 @@ import com.jobportal.entity.User;
 import com.jobportal.exception.JobPortalException;
 import com.jobportal.mapper.UserMapper;
 import com.jobportal.repository.UserRepository;
-import com.jobportal.service.EmailService;
 import com.jobportal.service.UserService;
 import com.jobportal.utils.SequenceUtilities;
+import jakarta.mail.MessagingException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 
 
@@ -44,16 +46,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException {
+    public OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
         var user=(User)authentication.getPrincipal();
         if(email.equalsIgnoreCase(user.getEmail())){
            sendOtpAtEmail(user);
         }
-
         return new OtpResponse();
     }
-    private void sendOtpAtEmail(User user){
+    private void sendOtpAtEmail(User user) throws MessagingException {
        //this method will send otp
-        emailService.sendEmail();
+        var otp=generateAndSaveActivationToken(user);
+        emailService.sendEmail(user.getEmail(),user.getName(),EMailTemplateName.ACTIVATE_ACCOUNT,"",otp,"Account Activation");
     }
+    private @NotNull String generateAndSaveActivationToken(User user) {
+//        String generatedToken = generateActivationCode(6);
+//        var token = Token.builder().toekn(generatedToken).createdat(LocalDateTime.now())
+//                .expiredat(LocalDateTime.now().plusMinutes(15)).user(user).build();
+//        tokenRepo.save(token);
+        return generateActivationCode(6);
+    }
+
+    private String generateActivationCode(int length) {
+        String character = "0123456789";
+        StringBuilder codeBuilder = new StringBuilder();
+        SecureRandom secureRandom = new SecureRandom();
+        for (int i = 0; i < length; i++) {
+            int randomIndex = secureRandom.nextInt(character.length());
+            codeBuilder.append(character.charAt(randomIndex));
+        }
+        return codeBuilder.toString();
+    }
+
 }

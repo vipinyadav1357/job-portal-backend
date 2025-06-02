@@ -4,6 +4,7 @@ import com.jobportal.dtos.AuthenticationRequest;
 import com.jobportal.dtos.OtpResponse;
 import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @RestController
 @CrossOrigin
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/otp/{email}")
-    public ResponseEntity<OtpResponse> sendOtp(@PathVariable String email, Authentication authentication) {
+    public ResponseEntity<OtpResponse> sendOtp(@PathVariable String email, Authentication authentication) throws MessagingException {
         return ResponseEntity.ok(userService.sendOtp(email,authentication));
     }
 }
