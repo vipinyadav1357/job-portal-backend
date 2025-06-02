@@ -1,10 +1,13 @@
 package com.jobportal.service;
 
-import com.jobportal.dtos.LoginDto;
-import com.jobportal.dtos.UserDto;
+import com.jobportal.dtos.AuthenticationRequest;
+import com.jobportal.dtos.OtpResponse;
+import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.exception.JobPortalException;
+import org.springframework.security.core.Authentication;
 
 public interface UserService {
-    public UserDto registerUser(UserDto dto) throws JobPortalException;
-    public LoginDto loginUser(LoginDto dto) throws JobPortalException;
+     RegisterRequest registerUser(RegisterRequest dto) throws JobPortalException;
+     AuthenticationRequest loginUser(AuthenticationRequest dto) throws JobPortalException;
+     OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException;
 }

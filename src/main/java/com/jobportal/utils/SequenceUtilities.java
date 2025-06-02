@@ -16,7 +16,7 @@ public class SequenceUtilities {
     private static MongoOperations mongoOperations;
 
     @Autowired
-    public SequenceUtilities(MongoOperations mongoOperations) {
+     SequenceUtilities(MongoOperations mongoOperations) {
         SequenceUtilities.mongoOperations = mongoOperations;
     }
     public static Long getNextSequence(String key) throws JobPortalException {

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserDto {
+public class RegisterRequest {
     private Long id;
     private String name;
     @Email(message = "Email is not well formatted")
