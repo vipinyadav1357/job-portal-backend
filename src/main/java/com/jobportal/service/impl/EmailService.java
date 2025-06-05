@@ -41,7 +41,7 @@ public class EmailService {
         mimeMessageHelper.setTo(to);
         mimeMessageHelper.setSubject(subject);
         String template = templateEngine.process(templateName, context);
-        mimeMessageHelper.setText(template);
+        mimeMessageHelper.setText(template,true);
         javaMailSender.send(mimeMessage);
     }
 }

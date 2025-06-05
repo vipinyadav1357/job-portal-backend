@@ -11,4 +11,5 @@ public interface UserService {
      RegisterRequest registerUser(RegisterRequest dto) throws JobPortalException;
      AuthenticationRequest loginUser(AuthenticationRequest dto) throws JobPortalException;
      OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException;
+     OtpResponse verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException;
 }

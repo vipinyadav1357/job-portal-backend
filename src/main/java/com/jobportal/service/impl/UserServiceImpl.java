@@ -3,9 +3,11 @@ package com.jobportal.service.impl;
 import com.jobportal.dtos.AuthenticationRequest;
 import com.jobportal.dtos.OtpResponse;
 import com.jobportal.dtos.RegisterRequest;
+import com.jobportal.entity.OTP;
 import com.jobportal.entity.User;
 import com.jobportal.exception.JobPortalException;
 import com.jobportal.mapper.UserMapper;
+import com.jobportal.repository.OtpRepository;
 import com.jobportal.repository.UserRepository;
 import com.jobportal.service.UserService;
 import com.jobportal.utils.SequenceUtilities;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final OtpRepository otpRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -47,23 +51,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
-        var user=(User)authentication.getPrincipal();
-        if(email.equalsIgnoreCase(user.getEmail())){
-           sendOtpAtEmail(user);
+        var user = (User) authentication.getPrincipal();
+        if (email.equalsIgnoreCase(user.getEmail())) {
+            sendOtpAtEmail(user);
         }
-        return new OtpResponse();
+        return new OtpResponse("Otp Sent to your Email Id");
     }
+
+
     private void sendOtpAtEmail(User user) throws MessagingException {
-       //this method will send otp
-        var otp=generateAndSaveActivationToken(user);
-        emailService.sendEmail(user.getEmail(),user.getName(),EMailTemplateName.ACTIVATE_ACCOUNT,"",otp,"Account Activation");
+        //this method will send otp
+        var otp = generateAndSaveActivationToken(user);
+        emailService.sendEmail(user.getEmail(), user.getName(), EMailTemplateName.ACTIVATE_ACCOUNT, "", otp, "Account Activation");
     }
+
     private @NotNull String generateAndSaveActivationToken(User user) {
-//        String generatedToken = generateActivationCode(6);
-//        var token = Token.builder().toekn(generatedToken).createdat(LocalDateTime.now())
-//                .expiredat(LocalDateTime.now().plusMinutes(15)).user(user).build();
-//        tokenRepo.save(token);
-        return generateActivationCode(6);
+        String generatedToken = generateActivationCode(6);
+
+        var token = OTP.builder().email(user.getEmail()).otpCode(generatedToken).creationDate(LocalDateTime.now())
+                .expiritionTime(LocalDateTime.now().plusMinutes(15)).build();
+
+        otpRepository.save(token);
+        return generatedToken;
     }
 
     private String generateActivationCode(int length) {
@@ -77,4 +86,22 @@ public class UserServiceImpl implements UserService {
         return codeBuilder.toString();
     }
 
+    @Override
+    public OtpResponse verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException {
+        var user = (User) authentication.getPrincipal();
+        if (email.equalsIgnoreCase(user.getEmail())) {
+            OTP loadedOTP = otpRepository.findByOtp(otp).orElseThrow(() -> new JobPortalException("Otp is wrong"));
+            if (loadedOTP.getOtpCode().equals(otp) && LocalDateTime.now().isAfter(loadedOTP.getExpiritionTime())) {
+                otpRepository.delete(loadedOTP);
+                sendOtpAtEmail(user);
+                throw new JobPortalException("otp has been expired");
+            }else if(loadedOTP.getOtpCode().equals(otp)){
+                loadedOTP.setUpdationTime(LocalDateTime.now());
+                otpRepository.save(loadedOTP);
+            }
+        } else {
+            throw new JobPortalException("is that you ?");
+        }
+        return new OtpResponse("otp verified");
+    }
 }
