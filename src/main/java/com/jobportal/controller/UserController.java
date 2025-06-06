@@ -1,7 +1,7 @@
 package com.jobportal.controller;
 
 import com.jobportal.dtos.AuthenticationRequest;
-import com.jobportal.dtos.OtpResponse;
+import com.jobportal.dtos.Response;
 import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.service.UserService;
 import jakarta.mail.MessagingException;
@@ -35,11 +35,15 @@ public class UserController {
     }
 
     @PostMapping("/otp/{email}")
-    public ResponseEntity<OtpResponse> sendOtp(@PathVariable String email, Authentication authentication) throws MessagingException {
+    public ResponseEntity<Response> sendOtp(@PathVariable String email, Authentication authentication) throws MessagingException {
         return ResponseEntity.ok(userService.sendOtp(email,authentication));
     }
     @PostMapping("/otp/{email}/{otp}")
-    public ResponseEntity<OtpResponse> verifyOtp(@PathVariable String email,@PathVariable String otp, Authentication authentication) throws MessagingException {
+    public ResponseEntity<Response> verifyOtp(@PathVariable String email, @PathVariable String otp, Authentication authentication) throws MessagingException {
         return ResponseEntity.ok(userService.verifyOtp(email,otp,authentication));
+    }
+    @PostMapping("/changePass")
+    public ResponseEntity<Response> changePass(@RequestBody @Valid AuthenticationRequest request, Authentication authentication) throws MessagingException {
+        return ResponseEntity.ok(userService.changePass(request,authentication));
     }
 }

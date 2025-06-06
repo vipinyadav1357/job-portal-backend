@@ -1,8 +1,8 @@
 package com.jobportal.service.impl;
 
 import com.jobportal.dtos.AuthenticationRequest;
-import com.jobportal.dtos.OtpResponse;
 import com.jobportal.dtos.RegisterRequest;
+import com.jobportal.dtos.Response;
 import com.jobportal.entity.OTP;
 import com.jobportal.entity.User;
 import com.jobportal.exception.JobPortalException;
@@ -50,12 +50,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OtpResponse sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
+    public Response sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
         var user = (User) authentication.getPrincipal();
         if (email.equalsIgnoreCase(user.getEmail())) {
             sendOtpAtEmail(user);
         }
-        return new OtpResponse("Otp Sent to your Email Id");
+        return new Response("Otp Sent to your Email Id");
     }
 
 
@@ -87,21 +87,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OtpResponse verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException {
+    public Response verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException {
         var user = (User) authentication.getPrincipal();
         if (email.equalsIgnoreCase(user.getEmail())) {
-            OTP loadedOTP = otpRepository.findByOtp(otp).orElseThrow(() -> new JobPortalException("Otp is wrong"));
+            OTP loadedOTP = otpRepository.findByOtpCode(otp).orElseThrow(() -> new JobPortalException("Otp is wrong"));
             if (loadedOTP.getOtpCode().equals(otp) && LocalDateTime.now().isAfter(loadedOTP.getExpiritionTime())) {
                 otpRepository.delete(loadedOTP);
                 sendOtpAtEmail(user);
                 throw new JobPortalException("otp has been expired");
-            }else if(loadedOTP.getOtpCode().equals(otp)){
+            } else if (loadedOTP.getOtpCode().equals(otp)) {
                 loadedOTP.setUpdationTime(LocalDateTime.now());
                 otpRepository.save(loadedOTP);
             }
         } else {
             throw new JobPortalException("is that you ?");
         }
-        return new OtpResponse("otp verified");
+        return new Response("otp verified");
+    }
+
+    @Override
+    public Response changePass(AuthenticationRequest request, Authentication authentication) throws JobPortalException {
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new JobPortalException("user not found with this email"));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+        return new Response("password changed");
     }
 }
