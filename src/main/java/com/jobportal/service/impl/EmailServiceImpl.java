@@ -1,5 +1,7 @@
 package com.jobportal.service.impl;
 
+import com.jobportal.enums.EmailTemplateName;
+import com.jobportal.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +16,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Service(value = "email_service")
 @RequiredArgsConstructor
-public class EmailService {
+public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
+
     @Async
-    public void sendEmail(String to, String username, EMailTemplateName emailTemplateName, String confirmationUrl,
-                            String activationCode, String subject) throws MessagingException {
+    @Override
+    public void sendEmail(String to, String username, EmailTemplateName emailTemplateName, String confirmationUrl,
+                          String activationCode, String subject) throws MessagingException {
         String templateName;
         if (emailTemplateName == null) {
             templateName = "confirm-email";

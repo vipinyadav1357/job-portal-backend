@@ -38,7 +38,7 @@ public class UserController {
     public ResponseEntity<Response> sendOtp(@PathVariable String email, Authentication authentication) throws MessagingException {
         return ResponseEntity.ok(userService.sendOtp(email,authentication));
     }
-    @PostMapping("/otp/{email}/{otp}")
+    @GetMapping("/otp/{email}/{otp}")
     public ResponseEntity<Response> verifyOtp(@PathVariable String email, @PathVariable String otp, Authentication authentication) throws MessagingException {
         return ResponseEntity.ok(userService.verifyOtp(email,otp,authentication));
     }

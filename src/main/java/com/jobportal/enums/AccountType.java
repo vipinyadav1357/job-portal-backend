@@ -1,4 +1,4 @@
-package com.jobportal.dtos;
+package com.jobportal.enums;
 
 public enum AccountType {
     APPLICANT,EMPLOYER;

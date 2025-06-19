@@ -1,6 +1,6 @@
 package com.jobportal.entity;
 
-import com.jobportal.dtos.AccountType;
+import com.jobportal.enums.AccountType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
@@ -29,6 +27,7 @@ public class User implements UserDetails, Principal {
     private String password;
     private AccountType accountType;
 
+    private Long profileId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -42,6 +41,6 @@ public class User implements UserDetails, Principal {
 
     @Override
     public String getName() {
-        return this.email;
+        return this.name;
     }
 }

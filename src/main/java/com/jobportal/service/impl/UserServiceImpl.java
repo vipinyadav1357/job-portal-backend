@@ -5,10 +5,13 @@ import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.dtos.Response;
 import com.jobportal.entity.OTP;
 import com.jobportal.entity.User;
+import com.jobportal.enums.EmailTemplateName;
 import com.jobportal.exception.JobPortalException;
 import com.jobportal.mapper.UserMapper;
 import com.jobportal.repository.OtpRepository;
 import com.jobportal.repository.UserRepository;
+import com.jobportal.service.EmailService;
+import com.jobportal.service.ProfileService;
 import com.jobportal.service.UserService;
 import com.jobportal.utils.SequenceUtilities;
 import jakarta.mail.MessagingException;
@@ -23,15 +26,16 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 
-@Service(value = "userService")
+@Service(value = "user_service")
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService  {
 
     private final UserMapper userMapper;
     private final OtpRepository otpRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ProfileService profileService;
 
     @Override
     public RegisterRequest registerUser(RegisterRequest dto) throws JobPortalException {
@@ -39,19 +43,24 @@ public class UserServiceImpl implements UserService {
         if (user1.isPresent())
             throw new JobPortalException("User Already Registered");
         dto.setId(SequenceUtilities.getNextSequence("users"));
-        User user = userMapper.toUser(dto);
-        return userMapper.toUserDto(userRepository.save(user));
+        dto.setProfileId(profileService.createProfile(dto.getEmail()));
+        return userMapper.toUserDto(userRepository.save(userMapper.toUser(dto)));
     }
 
     @Override
     public AuthenticationRequest loginUser(AuthenticationRequest dto) throws JobPortalException {
-        var user1 = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new JobPortalException(dto.getEmail() + " is not found "));
-        return passwordEncoder.matches(dto.getPassword(), user1.getPassword()) ? dto : new AuthenticationRequest();
+        var user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new JobPortalException(dto.getEmail() + " is not found "));
+        if(passwordEncoder.matches(dto.getPassword(), user.getPassword())){
+            return dto;
+        }else{
+            throw new JobPortalException("username or password is wrong");
+        }
     }
 
     @Override
     public Response sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
-        var user = (User) authentication.getPrincipal();
+//        var user = (User) authentication.getPrincipal();
+        User user=userRepository.findByEmail(email).orElseThrow();
         if (email.equalsIgnoreCase(user.getEmail())) {
             sendOtpAtEmail(user);
         }
@@ -62,7 +71,7 @@ public class UserServiceImpl implements UserService {
     private void sendOtpAtEmail(User user) throws MessagingException {
         //this method will send otp
         var otp = generateAndSaveActivationToken(user);
-        emailService.sendEmail(user.getEmail(), user.getName(), EMailTemplateName.ACTIVATE_ACCOUNT, "", otp, "Account Activation");
+        emailService.sendEmail(user.getEmail(), user.getName(), EmailTemplateName.ACTIVATE_ACCOUNT, "", otp, "Account Activation");
     }
 
     private @NotNull String generateAndSaveActivationToken(User user) {
@@ -88,7 +97,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException {
-        var user = (User) authentication.getPrincipal();
+        //        var user = (User) authentication.getPrincipal();
+        User user=userRepository.findByEmail(email).orElseThrow();
         if (email.equalsIgnoreCase(user.getEmail())) {
             OTP loadedOTP = otpRepository.findByOtpCode(otp).orElseThrow(() -> new JobPortalException("Otp is wrong"));
             if (loadedOTP.getOtpCode().equals(otp) && LocalDateTime.now().isAfter(loadedOTP.getExpiritionTime())) {
