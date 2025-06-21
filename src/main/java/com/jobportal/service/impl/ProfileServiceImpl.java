@@ -7,6 +7,7 @@ import com.jobportal.mapper.ProfileMapper;
 import com.jobportal.repository.ProfileRepository;
 import com.jobportal.service.ProfileService;
 import com.jobportal.utils.SequenceUtilities;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-
     private final ProfileRepository profileRepository;
     private final ProfileMapper profileMapper;
 

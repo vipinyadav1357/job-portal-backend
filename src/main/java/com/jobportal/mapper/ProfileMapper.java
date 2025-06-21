@@ -2,7 +2,9 @@ package com.jobportal.mapper;
 
 import com.jobportal.dtos.ProfileDto;
 import com.jobportal.entity.Profile;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProfileMapper {
 
     public ProfileDto toProfileDto(Profile profile){
