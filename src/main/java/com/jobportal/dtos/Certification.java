@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class Certification {
-    private String title;
+    private String name;
     private String issuer;
     private String issueDate;
     private String certificateId;

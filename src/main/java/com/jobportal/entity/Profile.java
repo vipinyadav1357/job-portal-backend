@@ -17,6 +17,7 @@ import java.util.List;
 public class Profile {
     @Id
     private Long id;
+    private String name;
     private String email;
     private String jobTitle;
     private String company;

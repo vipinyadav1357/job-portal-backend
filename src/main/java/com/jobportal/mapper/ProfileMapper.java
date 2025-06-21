@@ -11,6 +11,7 @@ public class ProfileMapper {
         return ProfileDto
                 .builder()
                 .id(profile.getId())
+                .name(profile.getName())
                 .email(profile.getEmail())
                 .jobTitle(profile.getJobTitle())
                 .company(profile.getCompany())
@@ -25,6 +26,7 @@ public class ProfileMapper {
         return Profile
                 .builder()
                 .id(profileDto.getId())
+                .name(profileDto.getName())
                 .email(profileDto.getEmail())
                 .jobTitle(profileDto.getJobTitle())
                 .company(profileDto.getCompany())

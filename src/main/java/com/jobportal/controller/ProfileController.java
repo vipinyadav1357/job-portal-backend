@@ -20,4 +20,8 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> getProfile(@PathVariable Long id, Authentication authentication){
         return ResponseEntity.ok(profileService.getProfile(id));
     }
+    @PutMapping("/update")
+    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto dto, Authentication authentication){
+        return ResponseEntity.ok(profileService.updateProfile(dto));
+    }
 }
