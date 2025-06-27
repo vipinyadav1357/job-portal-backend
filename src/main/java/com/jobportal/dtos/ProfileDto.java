@@ -18,6 +18,7 @@ public class ProfileDto {
     private String jobTitle;
     private String company;
     private String location;
+    private String profilePicture;
 
     private String about;
 

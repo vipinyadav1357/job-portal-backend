@@ -4,6 +4,8 @@ import com.jobportal.dtos.ProfileDto;
 import com.jobportal.entity.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
+
 @Service
 public class ProfileMapper {
 
@@ -16,8 +18,9 @@ public class ProfileMapper {
                 .jobTitle(profile.getJobTitle())
                 .company(profile.getCompany())
                 .location(profile.getLocation())
-                .about(profile.getAbout()).
-                skills(profile.getSkills())
+                .about(profile.getAbout())
+                .skills(profile.getSkills())
+                .profilePicture(profile.getProfilePicture()!=null? Base64.getEncoder().encodeToString(profile.getProfilePicture()):null)
                 .experience(profile.getExperience())
                 .certifications(profile.getCertifications())
         .build();
@@ -33,6 +36,7 @@ public class ProfileMapper {
                 .location(profileDto.getLocation())
                 .about(profileDto.getAbout())
                 .skills(profileDto.getSkills())
+                .profilePicture(profileDto.getProfilePicture()!=null? Base64.getDecoder().decode(profileDto.getProfilePicture()) :null )
                 .experience(profileDto.getExperience())
                 .certifications(profileDto.getCertifications())
                 .build();

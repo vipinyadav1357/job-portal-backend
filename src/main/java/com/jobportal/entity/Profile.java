@@ -22,7 +22,7 @@ public class Profile {
     private String jobTitle;
     private String company;
     private String location;
-
+    private byte[] profilePicture;
     private String about;
 
     private List<String> skills;
