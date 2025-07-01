@@ -1,6 +1,7 @@
 package com.jobportal.service;
 
-import com.jobportal.entity.JobDto;
+import com.jobportal.dtos.ApplicantDto;
+import com.jobportal.dtos.JobDto;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface JobService {
     List<JobDto> getAll();
 
     JobDto getJob(Long jobId);
+
+    void applyJob(@Valid ApplicantDto applicantDto, Long jobId);
 }

@@ -1,6 +1,5 @@
 package com.jobportal.entity;
 
-import com.jobportal.dtos.Applicants;
 import com.jobportal.enums.JobStatus;
 import com.jobportal.enums.JobType;
 import lombok.*;
@@ -21,7 +20,7 @@ public class Job {
     private Long id;
     private String jobTitle;
     private String company;
-    private List<Applicants> applicants;
+    private List<Applicant> applicants;
     private String about;
     private String experience;
     private JobType jobType;

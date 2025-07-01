@@ -1,18 +1,25 @@
 package com.jobportal.mapper;
 
+import com.jobportal.dtos.JobDto;
 import com.jobportal.entity.Job;
-import com.jobportal.entity.JobDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
-public class JobMapper {
+import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+public class JobMapper {
+private final ApplicantMapper applicantMapper;
     public JobDto toJobDto(Job job) {
+        if (job == null) {
+            return null;
+        }
         return JobDto.builder()
                 .id(job.getId())
                 .jobTitle(job.getJobTitle())
                 .company(job.getCompany())
-                .applicants(job.getApplicants())
+                .applicants(job.getApplicants()!=null ? job.getApplicants().stream().map(applicantMapper::toApplicantDto).toList(): List.of())
                 .about(job.getAbout())
                 .experience(job.getExperience())
                 .jobType(job.getJobType())
@@ -26,11 +33,14 @@ public class JobMapper {
     }
 
     public Job toJob(JobDto jobDto) {
+        if (jobDto == null) {
+            return null;
+        }
         return Job.builder()
                 .id(jobDto.getId())
                 .jobTitle(jobDto.getJobTitle())
                 .company(jobDto.getCompany())
-                .applicants(jobDto.getApplicants())
+                .applicants(jobDto.getApplicants()!=null?jobDto.getApplicants().stream().map(applicantMapper::toApplicant).toList():List.of())
                 .about(jobDto.getAbout())
                 .experience(jobDto.getExperience())
                 .jobType(jobDto.getJobType())

@@ -1,7 +1,11 @@
 package com.jobportal.service.impl;
 
-import com.jobportal.entity.JobDto;
+import com.jobportal.dtos.ApplicantDto;
+import com.jobportal.dtos.JobDto;
+import com.jobportal.entity.Applicant;
+import com.jobportal.enums.ApplicationStatus;
 import com.jobportal.exception.JobPortalException;
+import com.jobportal.mapper.ApplicantMapper;
 import com.jobportal.mapper.JobMapper;
 import com.jobportal.repository.JobRepository;
 import com.jobportal.service.JobService;
@@ -10,13 +14,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
+    private final ApplicantMapper applicantMapper;
 
     @Override
     public JobDto postJob(JobDto jobDto) {
@@ -32,7 +39,30 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobDto getJob(Long jobId) {
-        var job=jobRepository.findById(jobId).orElseThrow(()-> new JobPortalException("job not found"));
+        var job = jobRepository.findById(jobId).orElseThrow(() -> new JobPortalException("job not found"));
         return jobMapper.toJobDto(job);
+    }
+
+    @Override
+    public void applyJob(ApplicantDto applicantDto, Long jobId) {
+        var job = jobRepository.findById(jobId).orElseThrow(() -> new JobPortalException("ha ha ha ha ha job not found"));
+
+        List<Applicant> applicants = job.getApplicants();
+
+        if(applicants==null)
+            applicants=new ArrayList<>();
+
+
+        if (!applicants.stream().filter(applicantsData -> Objects.equals(applicantsData.getEmail(), applicantDto.getEmail())).toList().isEmpty()) {
+            throw new JobPortalException("already applied");
+        }else{
+            applicantDto.setApplicationStatus(ApplicationStatus.APPLIED);
+            applicantDto.setApplicantId(1L);
+            applicantDto.setAppliedTime(LocalDateTime.now());
+            Applicant applicant = applicantMapper.toApplicant(applicantDto);
+            applicants.add(applicant);
+            job.setApplicants(applicants);
+            jobRepository.save(job);
+        }
     }
 }

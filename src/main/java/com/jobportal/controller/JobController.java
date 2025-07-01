@@ -1,12 +1,12 @@
 package com.jobportal.controller;
 
-import com.jobportal.dtos.ProfileDto;
-import com.jobportal.entity.JobDto;
+import com.jobportal.dtos.ApplicantDto;
+import com.jobportal.dtos.JobDto;
+import com.jobportal.dtos.Response;
 import com.jobportal.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,5 +32,10 @@ public class JobController {
     @GetMapping("/get/{jobId}")
     public ResponseEntity<JobDto> getJobById(@PathVariable Long jobId){
         return ResponseEntity.ok(jobService.getJob(jobId));
+    }
+    @PostMapping("/apply/{jobId}")
+    public ResponseEntity<Response> applyJob(@RequestBody @Valid ApplicantDto applicantDto, @PathVariable Long jobId){
+        jobService.applyJob(applicantDto,jobId);
+        return ResponseEntity.ok(Response.builder().message("applied Successfully").build());
     }
 }

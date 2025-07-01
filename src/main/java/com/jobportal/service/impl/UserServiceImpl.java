@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService  {
         if (email.equalsIgnoreCase(user.getEmail())) {
             sendOtpAtEmail(user);
         }
-        return new Response("Otp Sent to your Email Id");
+        return  Response.builder().message("Otp Sent to your Email Id").build();
     }
 
 
