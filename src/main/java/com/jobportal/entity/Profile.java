@@ -31,4 +31,5 @@ public class Profile {
 
     private List<Certification> certifications;
 
+    private List<Long> savedJobs;
 }

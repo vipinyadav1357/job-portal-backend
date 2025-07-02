@@ -11,9 +11,25 @@ import org.springframework.stereotype.Service;
 public class UserMapper {
     private final PasswordEncoder passwordEncoder;
     public User toUser(RegisterRequest dto){
-        return User.builder().id(dto.getId()).profileId(dto.getProfileId()).name(dto.getName()).email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword())).accountType(dto.getAccountType()).build();
+        return User
+                .builder()
+                .id(dto.getId())
+                .profileId(dto.getProfileId())
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .accountType(dto.getAccountType())
+                .build();
     }
     public RegisterRequest toUserDto(User user){
-        return RegisterRequest.builder().id(user.getId()).profileId(user.getProfileId()).name(user.getName()).email(user.getEmail()).password(user.getPassword()).accountType(user.getAccountType()).build();
+        return RegisterRequest
+                .builder()
+                .id(user.getId())
+                .profileId(user.getProfileId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .accountType(user.getAccountType())
+                .build();
     }
 }

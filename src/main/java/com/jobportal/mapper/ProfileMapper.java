@@ -23,6 +23,7 @@ public class ProfileMapper {
                 .profilePicture(profile.getProfilePicture()!=null? Base64.getEncoder().encodeToString(profile.getProfilePicture()):null)
                 .experience(profile.getExperience())
                 .certifications(profile.getCertifications())
+                .savedJobs(profile.getSavedJobs())
         .build();
     }
     public Profile toProfile(ProfileDto profileDto){
@@ -39,6 +40,7 @@ public class ProfileMapper {
                 .profilePicture(profileDto.getProfilePicture()!=null? Base64.getDecoder().decode(profileDto.getProfilePicture()) :null )
                 .experience(profileDto.getExperience())
                 .certifications(profileDto.getCertifications())
+                .savedJobs(profileDto.getSavedJobs())
                 .build();
     }
 }
