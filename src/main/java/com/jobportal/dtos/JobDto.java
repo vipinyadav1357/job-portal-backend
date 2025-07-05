@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class JobDto {
     private Long id;
+    private Long postedBy;
     private String jobTitle;
     private String company;
     private List<ApplicantDto> applicants;

@@ -32,7 +32,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileDto getProfile(Long id) throws JobPortalException {
        Profile profile= profileRepository.findById(id).orElseThrow(()-> new JobPortalException("profile not found"));
-       System.out.println(profile.getSavedJobs());
         return profileMapper.toProfileDto(profile);
     }
 

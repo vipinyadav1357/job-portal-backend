@@ -3,14 +3,17 @@ package com.jobportal.service.impl;
 import com.jobportal.dtos.ApplicantDto;
 import com.jobportal.dtos.JobDto;
 import com.jobportal.entity.Applicant;
+import com.jobportal.entity.Job;
 import com.jobportal.enums.ApplicationStatus;
 import com.jobportal.exception.JobPortalException;
 import com.jobportal.mapper.ApplicantMapper;
 import com.jobportal.mapper.JobMapper;
 import com.jobportal.repository.JobRepository;
+import com.jobportal.repository.UserRepository;
 import com.jobportal.service.JobService;
 import com.jobportal.utils.SequenceUtilities;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
     private final ApplicantMapper applicantMapper;
+    private final UserRepository userRepository;
 
     @Override
     public JobDto postJob(JobDto jobDto) {
@@ -64,5 +68,14 @@ public class JobServiceImpl implements JobService {
             job.setApplicants(applicants);
             jobRepository.save(job);
         }
+    }
+
+    @Override
+    public List<JobDto> getAllJobPostedBy(Long id) {
+       userRepository.findById(id).orElseThrow(()-> new JobPortalException(("user not found")));
+           Job job=new Job();
+           job.setId(id);
+           Example<Job> example= Example.of(job);
+        return jobRepository.findAll(example).stream().map(jobMapper::toJobDto).toList();
     }
 }

@@ -3,6 +3,7 @@ package com.jobportal.entity;
 import com.jobportal.enums.JobStatus;
 import com.jobportal.enums.JobType;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class Job {
     @Id
     private Long id;
+    private Long postedBy;
     private String jobTitle;
     private String company;
     private List<Applicant> applicants;

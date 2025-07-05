@@ -14,4 +14,6 @@ public interface JobService {
     JobDto getJob(Long jobId);
 
     void applyJob(@Valid ApplicantDto applicantDto, Long jobId);
+
+    List<JobDto> getAllJobPostedBy(Long id);
 }

@@ -17,6 +17,7 @@ private final ApplicantMapper applicantMapper;
         }
         return JobDto.builder()
                 .id(job.getId())
+                .postedBy(job.getPostedBy())
                 .jobTitle(job.getJobTitle())
                 .company(job.getCompany())
                 .applicants(job.getApplicants()!=null ? job.getApplicants().stream().map(applicantMapper::toApplicantDto).toList(): List.of())
@@ -38,6 +39,7 @@ private final ApplicantMapper applicantMapper;
         }
         return Job.builder()
                 .id(jobDto.getId())
+                .postedBy(jobDto.getPostedBy())
                 .jobTitle(jobDto.getJobTitle())
                 .company(jobDto.getCompany())
                 .applicants(jobDto.getApplicants()!=null?jobDto.getApplicants().stream().map(applicantMapper::toApplicant).toList():List.of())

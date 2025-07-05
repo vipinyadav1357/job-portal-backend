@@ -38,4 +38,8 @@ public class JobController {
         jobService.applyJob(applicantDto,jobId);
         return ResponseEntity.ok(Response.builder().message("applied Successfully").build());
     }
+    @GetMapping("/postedBy/{id}")
+    public ResponseEntity<List<JobDto>> getAllJobPostedBy(@PathVariable Long id){
+        return ResponseEntity.ok(jobService.getAllJobPostedBy(id));
+    }
 }
