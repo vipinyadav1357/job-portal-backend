@@ -21,5 +21,6 @@ public class Applicant {
     private byte[] resume;
     private String coverLetter;
     private LocalDateTime appliedTime;
+    private LocalDateTime interViewTime;
     private ApplicationStatus applicationStatus;
 }

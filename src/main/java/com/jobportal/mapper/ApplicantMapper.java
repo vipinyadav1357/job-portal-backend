@@ -22,6 +22,7 @@ public class ApplicantMapper {
                 .resume(applicant.getResume()!=null? Base64.getEncoder().encodeToString(applicant.getResume()):null)
                 .coverLetter(applicant.getCoverLetter())
                 .appliedTime(applicant.getAppliedTime())
+                .interViewTime(applicant.getInterViewTime())
                 .applicationStatus(applicant.getApplicationStatus())
                 .build();
     }
@@ -40,6 +41,7 @@ public class ApplicantMapper {
                 .resume(applicantDto.getResume()!=null?Base64.getDecoder().decode(applicantDto.getResume()):null)
                 .coverLetter(applicantDto.getCoverLetter())
                 .appliedTime(applicantDto.getAppliedTime())
+                .interViewTime(applicantDto.getInterViewTime())
                 .applicationStatus(applicantDto.getApplicationStatus())
                 .build();
     }

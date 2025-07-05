@@ -12,15 +12,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
-public class ApplicantDto {
+public class Application {
+    private Long jobId;
     private Long applicantId;
-    private String name;
-    private String email;
-    private String contactNumber;
-    private String portfolioLink;
-    private String resume;
-    private String coverLetter;
-    private LocalDateTime appliedTime;
+    private Long userId;
     private LocalDateTime interViewTime;
     private ApplicationStatus applicationStatus;
 }

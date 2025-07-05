@@ -1,6 +1,7 @@
 package com.jobportal.service.impl;
 
 import com.jobportal.dtos.ApplicantDto;
+import com.jobportal.dtos.Application;
 import com.jobportal.dtos.JobDto;
 import com.jobportal.entity.Applicant;
 import com.jobportal.entity.Job;
@@ -53,13 +54,13 @@ public class JobServiceImpl implements JobService {
 
         List<Applicant> applicants = job.getApplicants();
 
-        if(applicants==null)
-            applicants=new ArrayList<>();
+        if (applicants == null)
+            applicants = new ArrayList<>();
 
 
         if (!applicants.stream().filter(applicantsData -> Objects.equals(applicantsData.getEmail(), applicantDto.getEmail())).toList().isEmpty()) {
             throw new JobPortalException("already applied");
-        }else{
+        } else {
             applicantDto.setApplicationStatus(ApplicationStatus.APPLIED);
             applicantDto.setApplicantId(1L);
             applicantDto.setAppliedTime(LocalDateTime.now());
@@ -72,10 +73,33 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<JobDto> getAllJobPostedBy(Long id) {
-       userRepository.findById(id).orElseThrow(()-> new JobPortalException(("user not found")));
-           Job job=new Job();
-           job.setId(id);
-           Example<Job> example= Example.of(job);
+        userRepository.findById(id).orElseThrow(() -> new JobPortalException(("user not found")));
+        Job job = new Job();
+        job.setId(id);
+        Example<Job> example = Example.of(job);
         return jobRepository.findAll(example).stream().map(jobMapper::toJobDto).toList();
+    }
+
+    @Override
+    public void changeApplicantStatus(Application applicantion) throws JobPortalException {
+        Job job = new Job();
+        job.setPostedBy(applicantion.getUserId());
+        job.setId(applicantion.getJobId());
+        Example<Job> example = Example.of(job);
+        job = jobRepository.findOne(example).orElseThrow();
+        List<Applicant> applicantList = job.getApplicants();
+        applicantList = applicantList
+                .stream()
+                .map((applicant) -> {
+                    if (applicantion.getApplicantId().equals(applicant.getApplicantId())) {
+                        applicant.setApplicationStatus(applicantion.getApplicationStatus());
+                    }
+                    if (applicantion.getApplicationStatus().equals(ApplicationStatus.INTERVIEWING)) {
+                        applicant.setInterViewTime(applicantion.getInterViewTime());
+                    }
+                    return applicant;
+                }).toList();
+        job.setApplicants(applicantList);
+        jobRepository.save(job);
     }
 }

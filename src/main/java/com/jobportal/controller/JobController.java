@@ -1,6 +1,7 @@
 package com.jobportal.controller;
 
 import com.jobportal.dtos.ApplicantDto;
+import com.jobportal.dtos.Application;
 import com.jobportal.dtos.JobDto;
 import com.jobportal.dtos.Response;
 import com.jobportal.service.JobService;
@@ -41,5 +42,10 @@ public class JobController {
     @GetMapping("/postedBy/{id}")
     public ResponseEntity<List<JobDto>> getAllJobPostedBy(@PathVariable Long id){
         return ResponseEntity.ok(jobService.getAllJobPostedBy(id));
+    }
+    @PostMapping("/changeAppStatus")
+    public ResponseEntity<Response> changeApplicantStatus(@RequestBody Application applicantion){
+        jobService.changeApplicantStatus(applicantion);
+        return ResponseEntity.ok(Response.builder().message("application status changed Successfully").build());
     }
 }
