@@ -44,8 +44,8 @@ public class JobController {
         return ResponseEntity.ok(jobService.getAllJobPostedBy(id));
     }
     @PostMapping("/changeAppStatus")
-    public ResponseEntity<Response> changeApplicantStatus(@RequestBody Application applicantion){
-        jobService.changeApplicantStatus(applicantion);
+    public ResponseEntity<Response> changeApplicantStatus(@RequestBody Application application){
+        jobService.changeApplicantStatus(application);
         return ResponseEntity.ok(Response.builder().message("application status changed Successfully").build());
     }
 }
