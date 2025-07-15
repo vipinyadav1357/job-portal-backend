@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/profile")
@@ -20,8 +22,13 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> getProfile(@PathVariable Long id, Authentication authentication){
         return ResponseEntity.ok(profileService.getProfile(id));
     }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<ProfileDto>> getAllProfile(){
+        return ResponseEntity.ok(profileService.getAllProfile());
+    }
     @PutMapping("/update")
     public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto dto, Authentication authentication){
         return ResponseEntity.ok(profileService.updateProfile(dto));
     }
+
 }

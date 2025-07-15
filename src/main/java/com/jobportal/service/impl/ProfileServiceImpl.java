@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,10 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileDto updateProfile(ProfileDto dto) throws JobPortalException {
          profileRepository.findById(dto.getId()).orElseThrow(()-> new JobPortalException("profile not found"));
         return profileMapper.toProfileDto(profileRepository.save(profileMapper.toProfile(dto)));
+    }
+
+    @Override
+    public List<ProfileDto> getAllProfile() throws JobPortalException {
+        return profileRepository.findAll().stream().map((profileMapper::toProfileDto)).toList();
     }
 }
