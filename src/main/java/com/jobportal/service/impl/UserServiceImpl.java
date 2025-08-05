@@ -1,6 +1,7 @@
 package com.jobportal.service.impl;
 
 import com.jobportal.dtos.AuthenticationRequest;
+import com.jobportal.dtos.NotificationDto;
 import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.dtos.Response;
 import com.jobportal.entity.OTP;
@@ -11,6 +12,7 @@ import com.jobportal.mapper.UserMapper;
 import com.jobportal.repository.OtpRepository;
 import com.jobportal.repository.UserRepository;
 import com.jobportal.service.EmailService;
+import com.jobportal.service.NotificationService;
 import com.jobportal.service.ProfileService;
 import com.jobportal.service.UserService;
 import com.jobportal.utils.SequenceUtilities;
@@ -36,7 +38,7 @@ public class UserServiceImpl implements UserService  {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ProfileService profileService;
-
+    private final NotificationService notificationService;
     @Override
     public RegisterRequest registerUser(RegisterRequest dto) throws JobPortalException {
         Optional<User> user1 = userRepository.findByEmail(dto.getEmail());
@@ -120,6 +122,11 @@ public class UserServiceImpl implements UserService  {
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new JobPortalException("user not found with this email"));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
+        NotificationDto notification = new NotificationDto();
+        notification.setReceiverId(user.getId());
+        notification.setMsg("password changed successfully");
+        notification.setAction("Password reset");
+        notificationService.sendNotification(notification);
         return new Response("password changed");
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 public class UserMapper {
     private final PasswordEncoder passwordEncoder;
     public User toUser(RegisterRequest dto){
+        if(dto==null)
+            return null;
         return User
                 .builder()
                 .id(dto.getId())
@@ -22,6 +24,8 @@ public class UserMapper {
                 .build();
     }
     public RegisterRequest toUserDto(User user){
+        if (user==null)
+            return null;
         return RegisterRequest
                 .builder()
                 .id(user.getId())

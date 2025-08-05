@@ -10,6 +10,8 @@ import java.util.Base64;
 public class ProfileMapper {
 
     public ProfileDto toProfileDto(Profile profile){
+        if(profile==null)
+            return null;
         return ProfileDto
                 .builder()
                 .id(profile.getId())
@@ -19,6 +21,7 @@ public class ProfileMapper {
                 .company(profile.getCompany())
                 .location(profile.getLocation())
                 .about(profile.getAbout())
+                .totalExp(profile.getTotalExp())
                 .skills(profile.getSkills())
                 .profilePicture(profile.getProfilePicture()!=null? Base64.getEncoder().encodeToString(profile.getProfilePicture()):null)
                 .experience(profile.getExperience())
@@ -27,6 +30,8 @@ public class ProfileMapper {
         .build();
     }
     public Profile toProfile(ProfileDto profileDto){
+        if(profileDto==null)
+            return null;
         return Profile
                 .builder()
                 .id(profileDto.getId())
@@ -36,6 +41,7 @@ public class ProfileMapper {
                 .company(profileDto.getCompany())
                 .location(profileDto.getLocation())
                 .about(profileDto.getAbout())
+                .totalExp(profileDto.getTotalExp())
                 .skills(profileDto.getSkills())
                 .profilePicture(profileDto.getProfilePicture()!=null? Base64.getDecoder().decode(profileDto.getProfilePicture()) :null )
                 .experience(profileDto.getExperience())

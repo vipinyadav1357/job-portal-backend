@@ -21,7 +21,7 @@ public class ProfileDto {
     private String profilePicture;
 
     private String about;
-
+    private Long totalExp;
     private List<String> skills;
 
     private List<Experience> experience;

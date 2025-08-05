@@ -24,7 +24,7 @@ public class Profile {
     private String location;
     private byte[] profilePicture;
     private String about;
-
+    private Long totalExp;
     private List<String> skills;
 
     private List<Experience> experience;
