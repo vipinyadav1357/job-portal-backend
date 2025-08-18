@@ -31,4 +31,12 @@ public class NotificationServiceImpl implements NotificationService {
     public List<NotificationDto> getAllUnReadNotification(Long id) throws JobPortalException {
         return notificationRepository.findByReceiverIdAndStatus(id, NotificationStatus.UNREAD).stream().map(notificationMapper::toNotificationDto).toList();
     }
+
+    @Override
+    public boolean changeNotificationStatus(Long notiId) throws JobPortalException {
+        var notification =notificationRepository.findById(notiId).orElseThrow();
+        notification.setStatus(NotificationStatus.READ);
+        notificationRepository.save(notification);
+        return notification.getStatus().equals(NotificationStatus.READ);
+    }
 }

@@ -2,7 +2,9 @@ package com.jobportal.mapper;
 
 import com.jobportal.dtos.NotificationDto;
 import com.jobportal.entity.Notification;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NotificationMapper {
     public  Notification toNotification(NotificationDto dto) {
         if (dto == null) {

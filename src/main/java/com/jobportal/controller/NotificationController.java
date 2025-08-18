@@ -14,9 +14,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
+
     @GetMapping("/getAllNoti/{userId}")
-    public ResponseEntity<List<NotificationDto>> getAllJob(@PathVariable Long userId)
+    public ResponseEntity<List<NotificationDto>> getAllJob(@PathVariable("userId") Long userId)
     {
         return ResponseEntity.ok(notificationService.getAllUnReadNotification(userId));
+    }
+    @PostMapping("/change/{notiId}")
+    public ResponseEntity<Boolean> changeNotificationStatus(@PathVariable("notiId") Long notiId)
+    {
+        return ResponseEntity.ok(notificationService.changeNotificationStatus(notiId));
     }
 }
