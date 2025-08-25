@@ -1,6 +1,7 @@
 package com.jobportal.controller;
 
 import com.jobportal.dtos.AuthenticationRequest;
+import com.jobportal.dtos.AuthenticationResponse;
 import com.jobportal.dtos.Response;
 import com.jobportal.dtos.RegisterRequest;
 import com.jobportal.service.UserService;
@@ -9,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
     @PostMapping("/register")
     public ResponseEntity<RegisterRequest> registerUser(@RequestBody @Valid RegisterRequest dto) {
 
@@ -29,8 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationRequest> loginUser(@RequestBody @Valid AuthenticationRequest dto) {
-
+    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody @Valid AuthenticationRequest dto) {
         return ResponseEntity.ok(userService.loginUser(dto));
     }
 

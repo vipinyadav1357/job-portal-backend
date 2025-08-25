@@ -1,9 +1,6 @@
 package com.jobportal.service.impl;
 
-import com.jobportal.dtos.AuthenticationRequest;
-import com.jobportal.dtos.NotificationDto;
-import com.jobportal.dtos.RegisterRequest;
-import com.jobportal.dtos.Response;
+import com.jobportal.dtos.*;
 import com.jobportal.entity.OTP;
 import com.jobportal.entity.User;
 import com.jobportal.enums.EmailTemplateName;
@@ -11,6 +8,7 @@ import com.jobportal.exception.JobPortalException;
 import com.jobportal.mapper.UserMapper;
 import com.jobportal.repository.OtpRepository;
 import com.jobportal.repository.UserRepository;
+import com.jobportal.security.JwtService;
 import com.jobportal.service.EmailService;
 import com.jobportal.service.NotificationService;
 import com.jobportal.service.ProfileService;
@@ -19,18 +17,23 @@ import com.jobportal.utils.SequenceUtilities;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Optional;
 
 
 @Service(value = "user_service")
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService  {
+public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final OtpRepository otpRepository;
@@ -39,6 +42,11 @@ public class UserServiceImpl implements UserService  {
     private final EmailService emailService;
     private final ProfileService profileService;
     private final NotificationService notificationService;
+    private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+
     @Override
     public RegisterRequest registerUser(RegisterRequest dto) throws JobPortalException {
         Optional<User> user1 = userRepository.findByEmail(dto.getEmail());
@@ -50,23 +58,29 @@ public class UserServiceImpl implements UserService  {
     }
 
     @Override
-    public AuthenticationRequest loginUser(AuthenticationRequest dto) throws JobPortalException {
-        var user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new JobPortalException(dto.getEmail() + " is not found "));
-        if(passwordEncoder.matches(dto.getPassword(), user.getPassword())){
-            return dto;
-        }else{
-            throw new JobPortalException("username or password is wrong");
+    public AuthenticationResponse loginUser(AuthenticationRequest request) throws JobPortalException {
+        Authentication auth;
+        try {
+            auth = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        } catch (AuthenticationException e) {
+            throw new JobPortalException("Invalid Credential");
         }
+        var user = (User) auth.getPrincipal();
+        var claims = new HashMap<String, Object>();
+        claims.put("username", user.getUsername());
+        var jwtToken = jwtService.generateToken(claims, user);
+        return AuthenticationResponse.builder().jwt(jwtToken).build();
     }
 
     @Override
     public Response sendOtp(String email, Authentication authentication) throws JobPortalException, MessagingException {
-//        var user = (User) authentication.getPrincipal();
-        User user=userRepository.findByEmail(email).orElseThrow();
+        var user = (User) authentication.getPrincipal();
+//        User user = userRepository.findByEmail(email).orElseThrow();
         if (email.equalsIgnoreCase(user.getEmail())) {
             sendOtpAtEmail(user);
         }
-        return  Response.builder().message("Otp Sent to your Email Id").build();
+        return Response.builder().message("Otp Sent to your Email Id").build();
     }
 
 
@@ -99,8 +113,8 @@ public class UserServiceImpl implements UserService  {
 
     @Override
     public Response verifyOtp(String email, String otp, Authentication authentication) throws JobPortalException, MessagingException {
-        //        var user = (User) authentication.getPrincipal();
-        User user=userRepository.findByEmail(email).orElseThrow();
+                var user = (User) authentication.getPrincipal();
+//        User user = userRepository.findByEmail(email).orElseThrow();
         if (email.equalsIgnoreCase(user.getEmail())) {
             OTP loadedOTP = otpRepository.findByOtpCode(otp).orElseThrow(() -> new JobPortalException("Otp is wrong"));
             if (loadedOTP.getOtpCode().equals(otp) && LocalDateTime.now().isAfter(loadedOTP.getExpiritionTime())) {

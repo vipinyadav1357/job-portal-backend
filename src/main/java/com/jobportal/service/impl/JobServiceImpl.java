@@ -3,6 +3,7 @@ package com.jobportal.service.impl;
 import com.jobportal.dtos.ApplicantDto;
 import com.jobportal.dtos.Application;
 import com.jobportal.dtos.JobDto;
+import com.jobportal.dtos.NotificationDto;
 import com.jobportal.entity.Applicant;
 import com.jobportal.entity.Job;
 import com.jobportal.enums.ApplicationStatus;
@@ -13,6 +14,7 @@ import com.jobportal.mapper.JobMapper;
 import com.jobportal.repository.JobRepository;
 import com.jobportal.repository.UserRepository;
 import com.jobportal.service.JobService;
+import com.jobportal.service.NotificationService;
 import com.jobportal.utils.SequenceUtilities;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -30,7 +32,7 @@ public class JobServiceImpl implements JobService {
     private final JobMapper jobMapper;
     private final ApplicantMapper applicantMapper;
     private final UserRepository userRepository;
-
+    private final NotificationService notificationService;
     @Override
     public JobDto postJob(JobDto jobDto) {
         if(jobDto.getId()==0){
@@ -95,14 +97,23 @@ public class JobServiceImpl implements JobService {
         Example<Job> example = Example.of(job);
         job = jobRepository.findOne(example).orElseThrow();
         List<Applicant> applicantList = job.getApplicants();
+        NotificationDto notification = new NotificationDto();
         applicantList = applicantList
                 .stream()
                 .map((applicant) -> {
                     if (application.getApplicantId().equals(applicant.getApplicantId())) {
                         applicant.setApplicationStatus(application.getApplicationStatus());
+                        notification.setReceiverId(application.getApplicantId());
+                        notification.setMsg("Application status changed to "+applicant.getApplicationStatus()+"for job ID: "+application.getJobId());
+                        notification.setAction("application status changed");
+                        notificationService.sendNotification(notification);
                     }
                     if (application.getApplicationStatus().equals(ApplicationStatus.INTERVIEWING)) {
                         applicant.setInterViewTime(application.getInterViewTime());
+                        notification.setReceiverId(application.getApplicantId());
+                        notification.setMsg("interview scheduled for your job ID:"+application.getJobId()+" and interview time is "+application.getInterViewTime());
+                        notification.setAction("interview scheduled");
+                        notificationService.sendNotification(notification);
                     }
                     return applicant;
                 }).toList();
