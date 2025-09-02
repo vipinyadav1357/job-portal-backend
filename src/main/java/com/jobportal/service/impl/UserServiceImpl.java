@@ -68,7 +68,9 @@ public class UserServiceImpl implements UserService {
         }
         var user = (User) auth.getPrincipal();
         var claims = new HashMap<String, Object>();
-        claims.put("username", user.getUsername());
+        claims.put("id",user.getId());
+        claims.put("name",user.getName());
+        claims.put("profileId",user.getProfileId());
         var jwtToken = jwtService.generateToken(claims, user);
         return AuthenticationResponse.builder().jwt(jwtToken).build();
     }
