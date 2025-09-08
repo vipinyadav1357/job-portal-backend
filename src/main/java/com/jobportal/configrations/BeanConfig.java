@@ -47,7 +47,7 @@ public class BeanConfig {
         config.setAllowedOrigins(Collections.singletonList("https://job-portal-3kp3.onrender.com"));
         config.setAllowedHeaders(Arrays.asList(HttpHeaders.ORIGIN, HttpHeaders.CONTENT_TYPE, HttpHeaders.ACCEPT,
                 HttpHeaders.AUTHORIZATION));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH","OPTIONS"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
 
